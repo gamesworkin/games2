@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RetroCloud - Indie Gaming</title>
+    <title>RetroCloud - Indie Gaming & Emulator</title>
     <link rel="stylesheet" href="style.css">
     <!-- Firebase SDKs (Versão estável v9 compatível com CDN) -->
     <script type="importmap">
@@ -33,7 +33,7 @@
         </nav>
     </header>
 
-    <!-- Área Principal do Emulador (Aparece ao clicar em um jogo) -->
+    <!-- Área Principal do Emulador (Aparece ao rodar um jogo) -->
     <main class="emulator-container hidden" id="emulator-screen">
         <div class="emulator-header">
             <h2 id="playing-title">Jogando...</h2>
@@ -45,52 +45,119 @@
         </div>
     </main>
 
-    <!-- Galeria de Jogos -->
-    <main class="catalog-container" id="catalog-screen">
-        <div class="section-title">
-            <h2>🛸 ROMs Independentes</h2>
-            <p>Clique em qualquer título para carregar instantaneamente na memória RAM</p>
-        </div>
+    <!-- Painel de Upload e Catálogo -->
+    <div class="main-content" id="catalog-screen">
+        
+        <!-- Seletor de Upload de ROM Local -->
+        <section class="upload-section">
+            <h2>🕹️ Carregar sua própria ROM</h2>
+            <p>Selecione o console, escolha a ROM no seu dispositivo e jogue instantaneamente pela memória RAM.</p>
+            <div class="upload-box">
+                <div class="input-group">
+                    <label for="system-select">Console:</label>
+                    <select id="system-select" class="select-style">
+                        <!-- Consoles de Mesa -->
+                        <option value="nes">Nintendo (NES)</option>
+                        <option value="snes">Super Nintendo (SNES)</option>
+                        <option value="n64">Nintendo 64</option>
+                        <option value="gc">Nintendo GameCube</option>
+                        <option value="wii">Nintendo Wii</option>
+                        <option value="mastersystem">Sega Master System</option>
+                        <option value="megadrive">Sega Mega Drive / Genesis</option>
+                        <option value="sega-cd">Sega CD</option>
+                        <option value="saturn">Sega Saturn</option>
+                        <option value="dreamcast">Sega Dreamcast</option>
+                        <option value="ps1">PlayStation 1 (PSX)</option>
+                        <option value="ps2">PlayStation 2 (PS2)</option>
+                        <option value="atari2600">Atari 2600</option>
+                        <option value="atari7800">Atari 7800</option>
+                        <option value="3do">3DO</option>
+                        <option value="pce">PC Engine / TurboGrafx-16</option>
+                        <!-- Portáteis -->
+                        <option value="gb">Game Boy (GB)</option>
+                        <option value="gbc">Game Boy Color (GBC)</option>
+                        <option value="gba">Game Boy Advance (GBA)</option>
+                        <option value="nds">Nintendo DS</option>
+                        <option value="3ds">Nintendo 3DS</option>
+                        <option value="gamegear">Sega Game Gear</option>
+                        <option value="psp">PlayStation Portable (PSP)</option>
+                        <option value="wswan">WonderSwan / Color</option>
+                        <option value="lynx">Atari Lynx</option>
+                        <option value="ngp">Neo Geo Pocket / Color</option>
+                        <!-- Arcades e Computadores -->
+                        <option value="arcade">Arcade (MAME / FBA)</option>
+                        <option value="neogeo">Neo Geo MVS/AES</option>
+                        <option value="dos">MS-DOS</option>
+                        <option value="amiga">Commodore Amiga</option>
+                    </select>
+                </div>
+                
+                <div class="input-group">
+                    <label for="rom-upload" class="custom-file-upload">
+                        📁 Escolher Arquivo ROM
+                    </label>
+                    <input type="file" id="rom-upload" accept=".nes,.sfc,.smc,.gba,.gbc,.gb,.bin,.md,.n64,.iso,.img,.z64,.pbp,.cso,.prg,.d64,.adf">
+                    <span id="file-name-display">Nenhum arquivo selecionado</span>
+                </div>
+                
+                <button onclick="uploadAndPlay()" class="btn-play-now">Jogar ROM Selecionada ⚡</button>
+            </div>
+        </section>
 
-        <div class="grid-games">
-            <!-- Card Jogo 1 (GBA) -->
-            <div class="game-card" onclick="launchGame('GBA', 'https://raw.githubusercontent.com/seu-usuario/seu-repositorio/main/roms/indie_game.gba', 'Vortex Advance')">
-                <div class="badge-system">GBA</div>
-                <div class="cover-wrapper">
-                    <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400" alt="Capa">
-                </div>
-                <div class="game-info">
-                    <h3>Vortex Advance</h3>
-                    <p>Desenvolvedor Indie A</p>
-                </div>
+        <!-- Galeria de ROMs Próprias/Independentes -->
+        <main class="catalog-container">
+            <div class="section-title">
+                <h2>🛸 ROMs Independentes Inclusas</h2>
+                <p>Disponibilizadas diretamente do servidor para a sua RAM sem esforço</p>
             </div>
 
-            <!-- Card Jogo 2 (SNES) -->
-            <div class="game-card" onclick="launchGame('SNES', 'https://raw.githubusercontent.com/seu-usuario/seu-repositorio/main/roms/homebrew_hero.sfc', 'Homebrew Hero')">
-                <div class="badge-system">SNES</div>
-                <div class="cover-wrapper">
-                    <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400" alt="Capa">
+            <div class="grid-games">
+                <!-- Card Jogo 1 (GBA) -->
+                <div class="game-card" onclick="launchGame('gba', 'https://raw.githubusercontent.com/seu-usuario/seu-repositorio/main/roms/indie_game.gba', 'Vortex Advance')">
+                    <div class="badge-system">GBA</div>
+                    <div class="cover-wrapper">
+                        <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400" alt="Capa Vortex Advance">
+                    </div>
+                    <div class="game-info">
+                        <h3>Vortex Advance</h3>
+                        <p>Desenvolvedor Indie A</p>
+                    </div>
                 </div>
-                <div class="game-info">
-                    <h3>Homebrew Hero</h3>
-                    <p>Studio Retro 2026</p>
-                </div>
-            </div>
 
-            <!-- Card Jogo 3 (Mega Drive) -->
-            <div class="game-card" onclick="launchGame('MEGADRIVE', 'https://raw.githubusercontent.com/seu-usuario/seu-repositorio/main/roms/cyber_space.md', 'Cyber Space 95')">
-                <div class="badge-system">MEGA DRIVE</div>
-                <div class="cover-wrapper">
-                    <img src="https://images.unsplash.com/photo-1578632767115-351597cf2477?w=400" alt="Capa">
+                <!-- Card Jogo 2 (SNES) -->
+                <div class="game-card" onclick="launchGame('snes', 'https://raw.githubusercontent.com/seu-usuario/seu-repositorio/main/roms/homebrew_hero.sfc', 'Homebrew Hero')">
+                    <div class="badge-system">SNES</div>
+                    <div class="cover-wrapper">
+                        <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400" alt="Capa Homebrew Hero">
+                    </div>
+                    <div class="game-info">
+                        <h3>Homebrew Hero</h3>
+                        <p>Studio Retro 2026</p>
+                    </div>
                 </div>
-                <div class="game-info">
-                    <h3>Cyber Space 95</h3>
-                    <p>Neon Team</p>
+
+                <!-- Card Jogo 3 (Mega Drive) -->
+                <div class="game-card" onclick="launchGame('megadrive', 'https://raw.githubusercontent.com/seu-usuario/seu-repositorio/main/roms/cyber_space.md', 'Cyber Space 95')">
+                    <div class="badge-system">MEGA DRIVE</div>
+                    <div class="cover-wrapper">
+                        <img src="https://images.unsplash.com/photo-1578632767115-351597cf2477?w=400" alt="Capa Cyber Space 95">
+                    </div>
+                    <div class="game-info">
+                        <h3>Cyber Space 95</h3>
+                        <p>Neon Team</p>
+                    </div>
                 </div>
             </div>
-        </div>
-    </main>
+        </main>
+    </div>
 
     <script type="module" src="app.js"></script>
+    <script>
+        // Script simples para exibir o nome do arquivo selecionado no upload de forma agradável
+        document.getElementById('rom-upload').addEventListener('change', function(e) {
+            const fileName = e.target.files[0] ? e.target.files[0].name : "Nenhum arquivo selecionado";
+            document.getElementById('file-name-display').textContent = fileName;
+        });
+    </script>
 </body>
 </html>
