@@ -1,0 +1,191 @@
+/* Variáveis de Cores - Estilo Cyberpunk / Dark Modern */
+:root {
+    --bg-main: #0b0c10;
+    --bg-card: #1f2833;
+    --neon-purple: #9d4edd;
+    --neon-cyan: #00f5d4;
+    --text-white: #ffffff;
+    --text-gray: #c5a8ff;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Roboto, sans-serif;
+}
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-white);
+    min-height: 100vh;
+    padding-bottom: 40px;
+}
+
+/* Navbar Responsiva */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 5%;
+    background-color: rgba(11, 12, 16, 0.95);
+    border-bottom: 2px solid var(--neon-purple);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    text-shadow: 0 0 10px var(--neon-purple);
+}
+.logo span { color: var(--neon-cyan); text-shadow: 0 0 10px var(--neon-cyan); }
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* Botões */
+.btn-home, .btn-auth, .btn-close {
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.btn-home {
+    background: transparent;
+    color: var(--neon-cyan);
+    border: 1px solid var(--neon-cyan);
+}
+.btn-home:hover {
+    background: var(--neon-cyan);
+    color: var(--bg-main);
+    box-shadow: 0 0 15px var(--neon-cyan);
+}
+
+.btn-auth {
+    background: var(--neon-purple);
+    color: white;
+    border: none;
+}
+.btn-auth:hover {
+    background: #7b2cbf;
+    box-shadow: 0 0 15px var(--neon-purple);
+}
+
+/* Grid de Cards */
+.catalog-container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.section-title { margin-bottom: 30px; }
+.section-title h2 { font-size: 2rem; color: var(--text-white); }
+.section-title p { color: var(--text-gray); font-size: 0.9rem; margin-top: 5px; }
+
+.grid-games {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 30px;
+}
+
+/* Efeitos Especiais nos Cards de ROMs */
+.game-card {
+    background: var(--bg-card);
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.game-card:hover {
+    transform: translateY(-8px);
+    border-color: var(--neon-cyan);
+    box-shadow: 0 10px 25px rgba(0, 245, 212, 0.2);
+}
+
+.cover-wrapper {
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+    position: relative;
+}
+
+.cover-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.game-card:hover .cover-wrapper img {
+    transform: scale(1.1) rotate(1deg);
+}
+
+.badge-system {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(0, 0, 0, 0.8);
+    color: var(--neon-cyan);
+    padding: 4px 10px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border-radius: 4px;
+    border: 1px solid var(--neon-cyan);
+    z-index: 2;
+}
+
+.game-info { padding: 20px; }
+.game-info h3 { font-size: 1.2rem; margin-bottom: 5px; }
+.game-info p { font-size: 0.85rem; color: var(--text-gray); }
+
+/* Container do Emulador */
+.emulator-container {
+    max-width: 960px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+.emulator-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.emulator-frame-wrapper {
+    background: #000;
+    border: 3px solid var(--neon-purple);
+    border-radius: 8px;
+    box-shadow: 0 0 30px rgba(157, 78, 221, 0.3);
+    aspect-ratio: 4/3; /* Padrão retro */
+    width: 100%;
+    position: relative;
+}
+
+#emulator-player { width: 100%; height: 100%; }
+.btn-close { background: #ff4757; color: white; border: none; }
+
+/* Perfil e Utilitários */
+.user-profile { display: flex; align-items: center; gap: 10px; }
+.user-profile img { width: 35px; height: 35px; border-radius: 50%; border: 2px solid var(--neon-cyan); }
+.btn-sm { padding: 5px 10px; background: transparent; border: 1px solid #ff4757; color: #ff4757; border-radius: 4px; cursor: pointer; }
+.hidden { display: none !important; }
+
+/* Adaptação Mobile */
+@media (max-width: 768px) {
+    .navbar { flex-direction: column; gap: 15px; padding: 15px; }
+    .grid-games { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; }
+    .cover-wrapper { height: 140px; }
+}
