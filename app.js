@@ -2,7 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "firebase/auth";
 import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
 
-// ⚠️ COLE AS CREDENCIAIS DA SUA CONTA FIREBASE AQUI
+// ⚠️ SUBSTITUA TODAS AS PROPRIEDADES ABAIXO PELAS CREDENCIAIS DO SEU CONSOLE FIREBASE
 const firebaseConfig = {
     apiKey: "SUA_API_KEY",
     authDomain: "SEU_AUTH_DOMAIN",
@@ -12,7 +12,7 @@ const firebaseConfig = {
     appId: "SEU_APP_ID"
 };
 
-// Inicializações
+// Inicialização das APIs do Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -20,14 +20,14 @@ const provider = new GoogleAuthProvider();
 
 let currentUser = null;
 
-// Elementos DOM
+// Captura de Elementos do DOM
 const btnLogin = document.getElementById('btn-login');
 const btnLogout = document.getElementById('btn-logout');
 const userInfo = document.getElementById('user-info');
 const userAvatar = document.getElementById('user-avatar');
 const userName = document.getElementById('user-name');
 
-// Monitorar Estado de Autenticação do Usuário
+// Listener de Autenticação - Gerencia Sessão do Usuário Ativo
 onAuthStateChanged(auth, (user) => {
     if (user) {
         currentUser = user;
@@ -42,69 +42,108 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
-// Ações de Login / Logout
+// Manipuladores de Eventos do Painel de Autenticação
 btnLogin.addEventListener('click', async () => {
     try { await signInWithPopup(auth, provider); } 
-    catch (error) { console.error("Erro ao logar: ", error); }
+    catch (error) { console.error("Erro no fluxo de autenticação: ", error); }
 });
 
 btnLogout.addEventListener('click', () => signOut(auth));
 
-// Função Global para Abrir Emulador (Roda Multi-plataformas puxando a ROM para a RAM)
+/**
+ * Motor de Inicialização Genérico do Emulador
+ * Puxa os dados binários da ROM para o contexto da RAM do navegador e roda de forma isolada.
+ */
 window.launchGame = function(system, romUrl, gameTitle) {
+    // Esconde a Dashboard e exibe a tela do emulador
     document.getElementById('catalog-screen').classList.add('hidden');
     const emuScreen = document.getElementById('emulator-screen');
     emuScreen.classList.remove('hidden');
     document.getElementById('playing-title').textContent = `Jogando: ${gameTitle}`;
 
-    // Configuração dinâmica do Motor EmulatorJS (Seta o Core conforme a plataforma)
-    // O core identifica se é snes, gba, megadrive, nes, gbc etc.
-    let systemCore = system.toLowerCase();
-
-    // Limpa player anterior se houver
+    // Sanitização e limpeza de instâncias prévias do canvas do player
     document.getElementById('emulator-player').innerHTML = `<div id="game-canvas"></div>`;
 
-    // Parâmetros obrigatórios injetados na janela global do EmulatorJS
+    // Injeção de Parâmetros Globais requeridos na API do EmulatorJS
     window.EJS_player = '#game-canvas';
-    window.EJS_core = systemCore;
-    window.EJS_gameUrl = romUrl; // Baixa via fetch nativo para a RAM
-    window.EJS_pathtodata = 'https://cdn.emulatorjs.org/latest/data/'; // CDN estável dos engines
+    window.EJS_core = system; // Seta o identificador exato do core
+    window.EJS_gameUrl = romUrl; // Atribui a rota binária ou Blob URL local
+    window.EJS_pathtodata = 'https://cdn.emulatorjs.org/latest/data/'; // CDN estável que serve os cores compilation (WebAssembly)
 
-    // Scripts do Emulador injetados dinamicamente
+    // Injeção assíncrona do script Loader oficial do ecossistema EmulatorJS
     const script = document.createElement('script');
     script.src = 'https://cdn.emulatorjs.org/latest/data/loader.js';
     document.getElementById('emulator-player').appendChild(script);
 
-    // Monitoramento do ciclo para resgatar saves do Firebase automaticamente
+    // Callback síncrono disparado no carregamento da rom para restaurar save states antigos do Firebase
     window.EJS_onLogin = async function() {
         if (!currentUser) return;
-        const saveRef = doc(db, "saves", `${currentUser.uid}_${gameTitle}`);
-        const saveSnap = await getDoc(saveRef);
-        if (saveSnap.exists()) {
-            // Se o Firebase tiver o saveState, injeta na RAM do player
-            window.EJS_LoadState(new Uint8Array(saveSnap.data().bytes));
+        // Sanitiza a chave de registro do documento removendo caracteres especiais impeditivos
+        const sanitizedTitle = gameTitle.replace(/[^a-zA-Z0-9]/g, "_");
+        const saveRef = doc(db, "saves", `${currentUser.uid}_${sanitizedTitle}`);
+        
+        try {
+            const saveSnap = await getDoc(saveRef);
+            if (saveSnap.exists()) {
+                // Injeta os bytes salvos diretamente de volta na alocação de RAM do WebAssembly
+                window.EJS_LoadState(new Uint8Array(saveSnap.data().bytes));
+                console.log("Save state restaurado com sucesso via Cloud!");
+            }
+        } catch (err) {
+            console.error("Falha ao ler save do Firebase:", err);
         }
     };
 
-    // Função de escuta para capturar quando o jogador salvar o game
+    // Interceptador disparado pela engine do emulador no evento de escrita de Save State do Usuário
     window.EJS_onSaveState = async function(data) {
         if (!currentUser) {
-            alert("Faça login com o Google para guardar o progresso na nuvem!");
+            alert("Faça login com a sua conta Google para salvar o progresso do jogo na nuvem!");
             return;
         }
-        // Converte o arquivo gerado na RAM em Array normal e envia ao Firestore
-        const saveRef = doc(db, "saves", `${currentUser.uid}_${gameTitle}`);
-        await setDoc(saveRef, {
-            bytes: Array.from(data),
-            updatedAt: new Date()
-        });
-        console.log("Progresso salvo no Firebase!");
+        
+        const sanitizedTitle = gameTitle.replace(/[^a-zA-Z0-9]/g, "_");
+        const saveRef = doc(db, "saves", `${currentUser.uid}_${sanitizedTitle}`);
+        
+        try {
+            // Empacota o buffer binário puro da RAM em formato array nativo legível para o Firestore
+            await setDoc(saveRef, {
+                bytes: Array.from(data),
+                updatedAt: new Date()
+            });
+            console.log("Estado de persistência gravado com sucesso no Firebase!");
+        } catch (err) {
+            console.error("Erro na gravação do save state na nuvem:", err);
+        }
     };
 };
 
-// Voltar para a Home
+/**
+ * Função de Processamento para Upload de Arquivos de ROM Locais
+ * Intercepta o arquivo local através da API FileReader e aloca na memória interna através de uma Blob URL
+ */
+window.uploadAndPlay = function() {
+    const fileInput = document.getElementById('rom-upload');
+    const system = document.getElementById('system-select').value;
+    
+    if (fileInput.files.length === 0) {
+        alert("Por favor, selecione um arquivo de ROM primeiro clicando no botão apropriado!");
+        return;
+    }
+
+    const file = fileInput.files[0];
+    // Cria uma URL virtual estática temporária apontando de volta para a RAM local do dispositivo do cliente
+    const localRomUrl = URL.createObjectURL(file);
+
+    // Aciona a rotina padrão do emulador passando a referência virtual da RAM
+    launchGame(system, localRomUrl, file.name);
+};
+
+/**
+ * Finaliza a execução do Core e retorna o usuário de volta à tela de seleção principal
+ */
 window.closeEmulator = function() {
     document.getElementById('emulator-screen').classList.add('hidden');
     document.getElementById('catalog-screen').classList.remove('hidden');
+    // Limpa a árvore interna limpando a memória RAM usada pelo WebAssembly
     document.getElementById('emulator-player').innerHTML = '';
 };
