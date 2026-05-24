@@ -248,7 +248,6 @@ input[type="file"] {
     transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1), filter 0.3s;
 }
 
-/* Transformação de imagem e efeito de brilho retro alternativo */
 .game-card:hover .cover-wrapper img {
     transform: scale(1.12);
     filter: brightness(1.1);
@@ -276,7 +275,7 @@ input[type="file"] {
 .game-info h3 { font-size: 1.15rem; margin-bottom: 6px; font-weight: 700; }
 .game-info p { font-size: 0.85rem; color: var(--text-gray); }
 
-/* Área do Engine de Emulação */
+/* Área do Engine de Emulação (Desktop Padrão) */
 .emulator-container {
     max-width: 960px;
     margin: 30px auto;
@@ -315,7 +314,7 @@ input[type="file"] {
 .btn-sm:hover { background: #ff4757; color: white; }
 .hidden { display: none !important; }
 
-/* Adaptação Mobile Fina */
+/* Otimização Responsiva e Ergonomia Mobile (Tela de Jogo Inteligente) */
 @media (max-width: 768px) {
     .navbar { flex-direction: column; gap: 15px; padding: 15px; text-align: center; }
     .nav-links { width: 100%; justify-content: center; flex-wrap: wrap; }
@@ -326,4 +325,47 @@ input[type="file"] {
     #file-name-display { text-align: center; width: 100%; }
     .grid-games { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 15px; }
     .cover-wrapper { height: 140px; }
+
+    /* Força Modo Layout Dividido para evitar dedos em cima da tela do jogo */
+    body:has(#emulator-screen:not(.hidden)) {
+        overflow: hidden; /* Trava o scroll da página enquanto joga */
+    }
+
+    .emulator-container:not(.hidden) {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        margin: 0;
+        padding: 0;
+        background: #000;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .emulator-header {
+        background: #0b0c10;
+        padding: 10px;
+        margin-bottom: 0;
+        border-bottom: 1px solid var(--neon-purple);
+        height: 50px;
+    }
+
+    /* Redimensiona o canvas para o topo da tela, deixando a metade de baixo livre */
+    .emulator-frame-wrapper {
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+        flex: 0 0 42%; /* Garante que a tela do jogo ocupe apenas a parte superior */
+        width: 100.0vw;
+        aspect-ratio: auto;
+    }
+
+    /* Empurra os controles virtuais do EmulatorJS para a metade inferior vazia da tela */
+    #emulator-player {
+        height: 100%;
+        width: 100%;
+    }
 }
