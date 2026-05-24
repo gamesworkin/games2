@@ -14,9 +14,6 @@
     padding: 0;
     box-sizing: border-box;
     font-family: 'Segoe UI', Roboto, sans-serif;
-    -webkit-touch-callout: none; /* Previne menus contextuais no mobile */
-    -webkit-user-select: none;
-    user-select: none;
 }
 
 body {
@@ -219,7 +216,7 @@ input[type="file"] {
     gap: 30px;
 }
 
-/* Efeitos Retro Avançados nos Cards */
+/* Efeitos Cards */
 .game-card {
     background: var(--bg-card);
     border-radius: 12px;
@@ -278,7 +275,7 @@ input[type="file"] {
 .game-info h3 { font-size: 1.15rem; margin-bottom: 6px; font-weight: 700; }
 .game-info p { font-size: 0.85rem; color: var(--text-gray); }
 
-/* Área do Engine de Emulação (Desktop Padrão) */
+/* Área do Emulador - Desktop */
 .emulator-container {
     max-width: 960px;
     margin: 30px auto;
@@ -317,7 +314,7 @@ input[type="file"] {
 .btn-sm:hover { background: #ff4757; color: white; }
 .hidden { display: none !important; }
 
-/* Configurações de layout Mobile Avançado */
+/* Ajustes Mobile Finos - Correção de Imagem Sumida / Preta */
 @media (max-width: 768px) {
     .navbar { flex-direction: column; gap: 15px; padding: 15px; text-align: center; }
     .nav-links { width: 100%; justify-content: center; flex-wrap: wrap; }
@@ -329,14 +326,12 @@ input[type="file"] {
     .grid-games { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 15px; }
     .cover-wrapper { height: 140px; }
 
-    /* Força Modo de Tela Inteira Fixa sem rolagem ao rodar emulador no celular */
+    /* Trava de scroll seguro */
     body:has(#emulator-screen:not(.hidden)) {
         overflow: hidden !important;
-        position: fixed;
-        width: 100vw;
-        height: 100vh;
     }
 
+    /* Container entra em modo flex total para deixar o EmulatorJS trabalhar livre */
     .emulator-container:not(.hidden) {
         position: fixed !important;
         top: 0 !important;
@@ -354,49 +349,25 @@ input[type="file"] {
     .emulator-header {
         background: #0b0c10;
         padding: 10px 15px;
-        margin-bottom: 0;
         border-bottom: 1px solid var(--neon-purple);
         height: 50px;
         flex: 0 0 50px;
     }
 
-    /* Força o canvas de imagem do jogo a ficar preso exclusivamente nos 40% superiores da tela */
+    /* O contêiner pai se expande para ocupar o restante da tela inteira,
+       permitindo que a lib desenhe o canvas e aplique a margem inferior dos botões sozinha */
     .emulator-frame-wrapper {
         border: none !important;
         border-radius: 0 !important;
         box-shadow: none !important;
-        flex: 0 0 40% !important; 
-        height: 40vh !important;
+        flex: 1 1 auto !important;
         width: 100vw !important;
+        height: calc(100vh - 50px) !important;
         aspect-ratio: auto !important;
-        background: #000 !important;
     }
 
-    /* Força a janela do player a preencher o bloco do topo */
     #emulator-player {
-        height: 100% !important;
         width: 100% !important;
-    }
-
-    /* Interceptação de estilo agressiva com !important. 
-       Força o container interno criado pelo EmulatorJS a empurrar os botões para a metade de baixo */
-    #emulator-player #game-canvas, 
-    #emulator-player iframe,
-    #emulator-player div {
         height: 100% !important;
-        width: 100% !important;
-        max-height: 40vh !important;
-        top: 0 !important;
-    }
-
-    /* Alvo específico sobre os controles virtuais injetados dinamicamente na biblioteca.
-       Eles são empurrados para iniciar após os 40% da tela de imagem, ocupando os 60% de baixo livres */
-    .pk-ios-controls, .emulator-controls, [class*="controls"], [id*="controls"] {
-        position: fixed !important;
-        top: 42vh !important; 
-        height: 58vh !important;
-        width: 100vw !important;
-        background: #0b0c10 !important; /* Fundo escuro para os botões aparecerem bem */
-        z-index: 999999 !important;
     }
 }
