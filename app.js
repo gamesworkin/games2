@@ -66,7 +66,7 @@ window.launchGame = function(system, romUrl, gameTitle) {
 
     // Injeção de Parâmetros Globais requeridos na API do EmulatorJS
     window.EJS_player = '#game-canvas';
-    window.EJS_core = system; // Seta o identificador exato do core
+    window.EJS_core = system; // Seta o identificador exato do core (ex: segaMD, snes, gba)
     window.EJS_gameUrl = romUrl; // Atribui a rota binária ou Blob URL local
     window.EJS_pathtodata = 'https://cdn.emulatorjs.org/latest/data/'; // CDN estável que serve os cores compilation (WebAssembly)
 
@@ -123,7 +123,7 @@ window.launchGame = function(system, romUrl, gameTitle) {
  */
 window.uploadAndPlay = function() {
     const fileInput = document.getElementById('rom-upload');
-    const system = document.getElementById('system-select').value;
+    let system = document.getElementById('system-select').value;
     
     if (fileInput.files.length === 0) {
         alert("Por favor, selecione um arquivo de ROM primeiro clicando no botão apropriado!");
@@ -131,6 +131,15 @@ window.uploadAndPlay = function() {
     }
 
     const file = fileInput.files[0];
+    const extension = file.name.split('.').pop().toLowerCase();
+
+    // Sistema inteligente de Auto-Correção e Suporte para Extensões Alternativas (.smd, .sms, .gen)
+    if (extension === 'smd' || extension === 'gen' || extension === 'md') {
+        system = 'segaMD'; // Redireciona forçado para o Core estável correto do Mega Drive
+    } else if (extension === 'sms') {
+        system = 'mastersystem'; // Força o core do Master System se o arquivo for .sms
+    }
+
     // Cria uma URL virtual estática temporária apontando de volta para a RAM local do dispositivo do cliente
     const localRomUrl = URL.createObjectURL(file);
 
