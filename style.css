@@ -14,6 +14,9 @@
     padding: 0;
     box-sizing: border-box;
     font-family: 'Segoe UI', Roboto, sans-serif;
+    -webkit-touch-callout: none; /* Previne menus contextuais no mobile */
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 body {
@@ -314,7 +317,7 @@ input[type="file"] {
 .btn-sm:hover { background: #ff4757; color: white; }
 .hidden { display: none !important; }
 
-/* Otimização Responsiva e Ergonomia Mobile (Tela de Jogo Inteligente) */
+/* Configurações de layout Mobile Avançado */
 @media (max-width: 768px) {
     .navbar { flex-direction: column; gap: 15px; padding: 15px; text-align: center; }
     .nav-links { width: 100%; justify-content: center; flex-wrap: wrap; }
@@ -326,46 +329,74 @@ input[type="file"] {
     .grid-games { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 15px; }
     .cover-wrapper { height: 140px; }
 
-    /* Força Modo Layout Dividido para evitar dedos em cima da tela do jogo */
+    /* Força Modo de Tela Inteira Fixa sem rolagem ao rodar emulador no celular */
     body:has(#emulator-screen:not(.hidden)) {
-        overflow: hidden; /* Trava o scroll da página enquanto joga */
+        overflow: hidden !important;
+        position: fixed;
+        width: 100vw;
+        height: 100vh;
     }
 
     .emulator-container:not(.hidden) {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        margin: 0;
-        padding: 0;
-        background: #000;
-        z-index: 9999;
-        display: flex;
-        flex-direction: column;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #000 !important;
+        z-index: 99999 !important;
+        display: flex !important;
+        flex-direction: column !important;
     }
 
     .emulator-header {
         background: #0b0c10;
-        padding: 10px;
+        padding: 10px 15px;
         margin-bottom: 0;
         border-bottom: 1px solid var(--neon-purple);
         height: 50px;
+        flex: 0 0 50px;
     }
 
-    /* Redimensiona o canvas para o topo da tela, deixando a metade de baixo livre */
+    /* Força o canvas de imagem do jogo a ficar preso exclusivamente nos 40% superiores da tela */
     .emulator-frame-wrapper {
-        border: none;
-        border-radius: 0;
-        box-shadow: none;
-        flex: 0 0 42%; /* Garante que a tela do jogo ocupe apenas a parte superior */
-        width: 100.0vw;
-        aspect-ratio: auto;
+        border: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        flex: 0 0 40% !important; 
+        height: 40vh !important;
+        width: 100vw !important;
+        aspect-ratio: auto !important;
+        background: #000 !important;
     }
 
-    /* Empurra os controles virtuais do EmulatorJS para a metade inferior vazia da tela */
+    /* Força a janela do player a preencher o bloco do topo */
     #emulator-player {
-        height: 100%;
-        width: 100%;
+        height: 100% !important;
+        width: 100% !important;
+    }
+
+    /* Interceptação de estilo agressiva com !important. 
+       Força o container interno criado pelo EmulatorJS a empurrar os botões para a metade de baixo */
+    #emulator-player #game-canvas, 
+    #emulator-player iframe,
+    #emulator-player div {
+        height: 100% !important;
+        width: 100% !important;
+        max-height: 40vh !important;
+        top: 0 !important;
+    }
+
+    /* Alvo específico sobre os controles virtuais injetados dinamicamente na biblioteca.
+       Eles são empurrados para iniciar após os 40% da tela de imagem, ocupando os 60% de baixo livres */
+    .pk-ios-controls, .emulator-controls, [class*="controls"], [id*="controls"] {
+        position: fixed !important;
+        top: 42vh !important; 
+        height: 58vh !important;
+        width: 100vw !important;
+        background: #0b0c10 !important; /* Fundo escuro para os botões aparecerem bem */
+        z-index: 999999 !important;
     }
 }
