@@ -19,6 +19,7 @@ const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
 let currentUser = null;
+let activeBlobUrl = null; // Armazena a referência para limpar a memória RAM depois
 
 // Captura de Elementos do DOM
 const btnLogin = document.getElementById('btn-login');
@@ -78,14 +79,12 @@ window.launchGame = function(system, romUrl, gameTitle) {
     // Callback síncrono disparado no carregamento da rom para restaurar save states antigos do Firebase
     window.EJS_onLogin = async function() {
         if (!currentUser) return;
-        // Sanitiza a chave de registro do documento removendo caracteres especiais impeditivos
         const sanitizedTitle = gameTitle.replace(/[^a-zA-Z0-9]/g, "_");
         const saveRef = doc(db, "saves", `${currentUser.uid}_${sanitizedTitle}`);
         
         try {
             const saveSnap = await getDoc(saveRef);
             if (saveSnap.exists()) {
-                // Injeta os bytes salvos diretamente de volta na alocação de RAM do WebAssembly
                 window.EJS_LoadState(new Uint8Array(saveSnap.data().bytes));
                 console.log("Save state restaurado com sucesso via Cloud!");
             }
@@ -105,7 +104,6 @@ window.launchGame = function(system, romUrl, gameTitle) {
         const saveRef = doc(db, "saves", `${currentUser.uid}_${sanitizedTitle}`);
         
         try {
-            // Empacota o buffer binário puro da RAM em formato array nativo legível para o Firestore
             await setDoc(saveRef, {
                 bytes: Array.from(data),
                 updatedAt: new Date()
@@ -135,24 +133,49 @@ window.uploadAndPlay = function() {
 
     // Sistema inteligente de Auto-Correção e Suporte para Extensões Alternativas (.smd, .sms, .gen)
     if (extension === 'smd' || extension === 'gen' || extension === 'md') {
-        system = 'segaMD'; // Redireciona forçado para o Core estável correto do Mega Drive
+        system = 'segaMD'; 
     } else if (extension === 'sms') {
-        system = 'mastersystem'; // Força o core do Master System se o arquivo for .sms
+        system = 'mastersystem'; 
+    }
+
+    // Se já havia uma ROM alocada anteriormente, limpa antes de gerar outra
+    if (activeBlobUrl) {
+        URL.revokeObjectURL(activeBlobUrl);
     }
 
     // Cria uma URL virtual estática temporária apontando de volta para a RAM local do dispositivo do cliente
-    const localRomUrl = URL.createObjectURL(file);
+    activeBlobUrl = URL.createObjectURL(file);
 
     // Aciona a rotina padrão do emulador passando a referência virtual da RAM
-    launchGame(system, localRomUrl, file.name);
+    launchGame(system, activeBlobUrl, file.name);
 };
 
 /**
- * Finaliza a execução do Core e retorna o usuário de volta à tela de seleção principal
+ * Finaliza a execução do Core, limpa a memória RAM e retorna o usuário à tela de seleção principal
  */
 window.closeEmulator = function() {
+    // 1. Destrói o Canvas e o iFrame do emulador descarregando o WebAssembly
+    document.getElementById('emulator-player').innerHTML = '';
+    
+    // 2. Coleta de lixo da memória RAM: Revoga o link da ROM para liberar espaço no sistema operacional
+    if (activeBlobUrl) {
+        URL.revokeObjectURL(activeBlobUrl);
+        activeBlobUrl = null;
+    }
+
+    // 3. Limpa todas as instâncias e variáveis globais criadas pelo Loader da biblioteca anterior
+    window.EJS_player = null;
+    window.EJS_core = null;
+    window.EJS_gameUrl = null;
+    if (window.EJS_emulator) {
+        try {
+            window.EJS_emulator.destroy(); // Método de encerramento interno se exposto pelo core
+        } catch(e) {}
+        window.EJS_emulator = null;
+    }
+
+    // 4. Alterna as telas de exibição visual da UI
     document.getElementById('emulator-screen').classList.add('hidden');
     document.getElementById('catalog-screen').classList.remove('hidden');
-    // Limpa a árvore interna limpando a memória RAM usada pelo WebAssembly
-    document.getElementById('emulator-player').innerHTML = '';
+    console.log("Instância do jogo destruída e alocação de memória RAM liberada com sucesso.");
 };
