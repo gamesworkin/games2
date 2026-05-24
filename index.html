@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Workin' Games Online</title>
+    <title>RetroCloud - Indie Gaming & Emulator</title>
     <link rel="stylesheet" href="style.css">
     <!-- Firebase SDKs (Versão estável v9 compatível com CDN) -->
     <script type="importmap">
@@ -20,10 +20,10 @@
 
     <!-- Header / Navbar -->
     <header class="navbar">
-        <div class="logo">WORKIN'<span>GAMES</span></div>
+        <div class="logo">RETRO<span>CLOUD</span></div>
         <nav class="nav-links">
-            <a href="https://gamesworkin.blogspot.com" target="_blank" class="btn-home">Workin' Games</a>
-            <a href="https://bombapatchworkin.blogspot.com" target="_blank" class="btn-home">Bomba Patch Workin'</a>
+            <a href="https://link-home-1.com" target="_blank" class="btn-home">Portal Geek</a>
+            <a href="https://link-home-2.com" target="_blank" class="btn-home">Dev Website</a>
             <button id="btn-login" class="btn-auth">Entrar com Google</button>
             <div id="user-info" class="user-profile hidden">
                 <img id="user-avatar" src="" alt="Avatar">
@@ -51,7 +51,7 @@
         <!-- Seletor de Upload de ROM Local -->
         <section class="upload-section">
             <h2>🕹️ Carregar sua própria ROM</h2>
-            <p>Selecione o console, escolha a ROM no seu dispositivo e jogue instantaneamente.</p>
+            <p>Selecione o console, escolha a ROM no seu dispositivo e jogue instantaneamente pela memória RAM.</p>
             <div class="upload-box">
                 <div class="input-group">
                     <label for="system-select">Console:</label>
@@ -63,7 +63,7 @@
                         <option value="gc">Nintendo GameCube</option>
                         <option value="wii">Nintendo Wii</option>
                         <option value="mastersystem">Sega Master System</option>
-                        <option value="megadrive">Sega Mega Drive / Genesis</option>
+                        <option value="segaMD">Sega Mega Drive / Genesis</option>
                         <option value="sega-cd">Sega CD</option>
                         <option value="saturn">Sega Saturn</option>
                         <option value="dreamcast">Sega Dreamcast</option>
@@ -94,9 +94,9 @@
                 
                 <div class="input-group">
                     <label for="rom-upload" class="custom-file-upload">
-                        📁 Escolher ROM
+                        📁 Escolher Arquivo ROM
                     </label>
-                    <input type="file" id="rom-upload" accept=".nes,.sfc,.smc,.gba,.gbc,.gb,.bin,.md,.n64,.iso,.img,.z64,.pbp,.cso,.prg,.d64,.adf">
+                    <input type="file" id="rom-upload" accept=".nes,.sfc,.smc,.gba,.gbc,.gb,.bin,.md,.smd,.sms,.gen,.n64,.iso,.img,.z64,.pbp,.cso,.prg,.d64,.adf">
                     <span id="file-name-display">Nenhum arquivo selecionado</span>
                 </div>
                 
@@ -107,44 +107,44 @@
         <!-- Galeria de ROMs Próprias/Independentes -->
         <main class="catalog-container">
             <div class="section-title">
-                <h2>🛸 Jogos Populares</h2>
-                <p>Jogue agora mesmo sem precisar ter uma ROM</p>
+                <h2>🛸 ROMs Independentes Inclusas</h2>
+                <p>Disponibilizadas diretamente do servidor para a sua RAM sem esforço</p>
             </div>
 
             <div class="grid-games">
                 <!-- Card Jogo 1 (GBA) -->
-                <div class="game-card" onclick="launchGame('gba', 'https://raw.githubusercontent.com/gamesworkin/games/main/roms/DBAA.gba', 'Dragon Ball Advanced Adcenture')">
+                <div class="game-card" onclick="launchGame('gba', 'https://raw.githubusercontent.com/seu-usuario/seu-repositorio/main/roms/indie_game.gba', 'Vortex Advance')">
                     <div class="badge-system">GBA</div>
                     <div class="cover-wrapper">
-                        <img src="https://sm.ign.com/ign_br/screenshot/default/dragon-ball-advance-adventure_pjja.png" alt="Dragon Ball Advanced Adventure">
+                        <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400" alt="Capa Vortex Advance">
                     </div>
                     <div class="game-info">
-                        <h3>Dragon Ball Advanced Adventure</h3>
-                        <p>Game Boy Advanced</p>
+                        <h3>Vortex Advance</h3>
+                        <p>Desenvolvedor Indie A</p>
                     </div>
                 </div>
 
                 <!-- Card Jogo 2 (SNES) -->
-                <div class="game-card" onclick="launchGame('snes', 'https://raw.githubusercontent.com/gamesworkin/games/main/roms/SMW.sfc', 'Super Mario World')">
+                <div class="game-card" onclick="launchGame('snes', 'https://raw.githubusercontent.com/seu-usuario/seu-repositorio/main/roms/homebrew_hero.sfc', 'Homebrew Hero')">
                     <div class="badge-system">SNES</div>
                     <div class="cover-wrapper">
-                        <img src="https://t.ctcdn.com.br/y4PK2MpnBBAr5FyG_RZ16uws3u8=/1200x675/smart/i286184.jpeg" alt="Super Mari World">
+                        <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400" alt="Capa Homebrew Hero">
                     </div>
                     <div class="game-info">
-                        <h3>Super Mario World</h3>
-                        <p>Super Nintendo</p>
+                        <h3>Homebrew Hero</h3>
+                        <p>Studio Retro 2026</p>
                     </div>
                 </div>
 
                 <!-- Card Jogo 3 (Mega Drive) -->
-                <div class="game-card" onclick="launchGame('megadrive', 'https://raw.githubusercontent.com/gamesworkin/games/main/roms/MJM.md','Michael Jacksons Moonwalker')">
+                <div class="game-card" onclick="launchGame('segaMD', 'https://raw.githubusercontent.com/seu-usuario/seu-repositorio/main/roms/cyber_space.md', 'Cyber Space 95')">
                     <div class="badge-system">MEGA DRIVE</div>
                     <div class="cover-wrapper">
-                        <img src="https://jogoveio.com.br/wp-content/uploads/2020/07/moonwalker-jogoveio-2.gif" alt="Michael Jacksons Moonwalker">
+                        <img src="https://images.unsplash.com/photo-1578632767115-351597cf2477?w=400" alt="Capa Cyber Space 95">
                     </div>
                     <div class="game-info">
-                        <h3>Michael Jackson's Moonwalker</h3>
-                        <p>Sega Mega Drive</p>
+                        <h3>Cyber Space 95</h3>
+                        <p>Neon Team</p>
                     </div>
                 </div>
             </div>
