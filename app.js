@@ -19,7 +19,7 @@ const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
 let currentUser = null;
-let activeBlobUrl = null; // Armazena a referência para limpar a memória RAM depois
+let activeBlobUrl = null; 
 
 // Captura de Elementos do DOM
 const btnLogin = document.getElementById('btn-login');
@@ -67,9 +67,13 @@ window.launchGame = function(system, romUrl, gameTitle) {
 
     // Injeção de Parâmetros Globais requeridos na API do EmulatorJS
     window.EJS_player = '#game-canvas';
-    window.EJS_core = system; // Seta o identificador exato do core (ex: segaMD, snes, gba)
-    window.EJS_gameUrl = romUrl; // Atribui a rota binária ou Blob URL local
-    window.EJS_pathtodata = 'https://cdn.emulatorjs.org/latest/data/'; // CDN estável que serve os cores compilation (WebAssembly)
+    window.EJS_core = system; 
+    window.EJS_gameUrl = romUrl; 
+    window.EJS_pathtodata = 'https://cdn.emulatorjs.org/latest/data/'; 
+    
+    // Configurações nativas para evitar tela preta no mobile e forçar o início imediato
+    window.EJS_startOnLoaded = true; 
+    window.EJS_AdUrl = ''; 
 
     // Injeção assíncrona do script Loader oficial do ecossistema EmulatorJS
     const script = document.createElement('script');
@@ -169,7 +173,7 @@ window.closeEmulator = function() {
     window.EJS_gameUrl = null;
     if (window.EJS_emulator) {
         try {
-            window.EJS_emulator.destroy(); // Método de encerramento interno se exposto pelo core
+            window.EJS_emulator.destroy(); 
         } catch(e) {}
         window.EJS_emulator = null;
     }
