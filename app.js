@@ -4,12 +4,13 @@ import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
 
 // ⚠️ SUBSTITUA TODAS AS PROPRIEDADES ABAIXO PELAS CREDENCIAIS DO SEU CONSOLE FIREBASE
 const firebaseConfig = {
-    apiKey: "AIzaSyATr3AFcjJtamWRKZEBBcsA8vi-_ckCeEs",
-    authDomain: "games2-c9b04.firebaseapp.com",
-    projectId: "games2-c9b04",
-    storageBucket: "games2-c9b04.firebasestorage.app",
-    messagingSenderId: "417046305603",
-    appId: "1:417046305603:web:52e921b1f10f9ed4b76df6"
+  apiKey: "AIzaSyATr3AFcjJtamWRKZEBBcsA8vi-_ckCeEs",
+  authDomain: "games2-c9b04.firebaseapp.com",
+  databaseURL: "https://games2-c9b04-default-rtdb.firebaseio.com",
+  projectId: "games2-c9b04",
+  storageBucket: "games2-c9b04.firebasestorage.app",
+  messagingSenderId: "417046305603",
+  appId: "1:417046305603:web:52e921b1f10f9ed4b76df6"
 };
 
 // Inicialização das APIs do Firebase
