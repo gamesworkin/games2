@@ -6,10 +6,10 @@ import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
 const firebaseConfig = {
     apiKey: "SUA_API_KEY",
     authDomain: "SEU_AUTH_DOMAIN",
-    projectId: "SEU_PROJECT_ID",
-    storageBucket: "SEU_STORAGE_BUCKET",
-    messagingSenderId: "SEU_MESSAGING_SENDER_ID",
-    appId: "SEU_APP_ID"
+    projectId: "games2-c9b04",
+    storageBucket: "games2-c9b04.firebasestorage.app",
+    messagingSenderId: "417046305603",
+    appId: "1:417046305603:web:52e921b1f10f9ed4b76df6"
 };
 
 // Inicialização das APIs do Firebase
