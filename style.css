@@ -314,7 +314,7 @@ input[type="file"] {
 .btn-sm:hover { background: #ff4757; color: white; }
 .hidden { display: none !important; }
 
-/* Ajustes Mobile Finos - Correção de Imagem Sumida / Preta */
+/* Ajustes Mobile Finos */
 @media (max-width: 768px) {
     .navbar { flex-direction: column; gap: 15px; padding: 15px; text-align: center; }
     .nav-links { width: 100%; justify-content: center; flex-wrap: wrap; }
@@ -326,12 +326,10 @@ input[type="file"] {
     .grid-games { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 15px; }
     .cover-wrapper { height: 140px; }
 
-    /* Trava de scroll seguro */
     body:has(#emulator-screen:not(.hidden)) {
         overflow: hidden !important;
     }
 
-    /* Container entra em modo flex total para deixar o EmulatorJS trabalhar livre */
     .emulator-container:not(.hidden) {
         position: fixed !important;
         top: 0 !important;
@@ -354,7 +352,6 @@ input[type="file"] {
         flex: 0 0 50px;
     }
 
-    /* O contêiner pai se expande para ocupar o restante da tela inteira */
     .emulator-frame-wrapper {
         border: none !important;
         border-radius: 0 !important;
