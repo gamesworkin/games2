@@ -3,27 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Workin' Games Emulação</title>
+    <title>Games Workin' Emulação Online</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Firebase SDKs (Versão estável v9 compatível com CDN) -->
     <script type="importmap">
         {
             "imports": {
                 "firebase/app": "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js",
-                "firebase/auth": "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js",
-                "firebase/firestore": "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js"
+                "firebase/auth": "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js"
             }
         }
     </script>
 </head>
 <body>
 
-    <!-- Header / Navbar -->
     <header class="navbar">
-        <div class="logo">WORKIN'<span>GAMES</span></div>
+        <div class="logo">RETRO<span>CLOUD</span></div>
         <nav class="nav-links">
-            <a href="https://gamesworkin.blogspot.com" target="_blank" class="btn-home">Games Workin'</a>
-            <a href="https://bombapatchworkin.com" target="_blank" class="btn-home">Bomba Patch Workin'</a>
+            <a href="https://link-home-1.com" target="_blank" class="btn-home">Portal Geek</a>
+            <a href="https://link-home-2.com" target="_blank" class="btn-home">Dev Website</a>
             <button id="btn-login" class="btn-auth">Entrar com Google</button>
             <div id="user-info" class="user-profile hidden">
                 <img id="user-avatar" src="" alt="Avatar">
@@ -33,22 +30,18 @@
         </nav>
     </header>
 
-    <!-- Área Principal do Emulador (Aparece ao rodar um jogo) -->
     <main class="emulator-container hidden" id="emulator-screen">
         <div class="emulator-header">
             <h2 id="playing-title">Jogando...</h2>
             <button onclick="closeEmulator()" class="btn-close">✖ Fechar Jogo</button>
         </div>
         <div class="emulator-frame-wrapper">
-            <!-- O EmulatorJS vai injetar o player aqui dentro -->
             <div id="emulator-player"></div>
         </div>
     </main>
 
-    <!-- Painel de Upload e Catálogo -->
     <div class="main-content" id="catalog-screen">
         
-        <!-- Seletor de Upload de ROM Local -->
         <section class="upload-section">
             <h2>🕹️ Carregar sua ROM</h2>
             <p>Selecione o console, escolha a ROM no seu dispositivo e jogue instantaneamente.</p>
@@ -56,7 +49,6 @@
                 <div class="input-group">
                     <label for="system-select">Console:</label>
                     <select id="system-select" class="select-style">
-                        <!-- Consoles de Mesa -->
                         <option value="nes">Nintendo (NES)</option>
                         <option value="snes">Super Nintendo (SNES)</option>
                         <option value="n64">Nintendo 64</option>
@@ -73,7 +65,6 @@
                         <option value="atari7800">Atari 7800</option>
                         <option value="3do">3DO</option>
                         <option value="pce">PC Engine / TurboGrafx-16</option>
-                        <!-- Portáteis -->
                         <option value="gb">Game Boy (GB)</option>
                         <option value="gbc">Game Boy Color (GBC)</option>
                         <option value="gba">Game Boy Advance (GBA)</option>
@@ -84,7 +75,6 @@
                         <option value="wswan">WonderSwan / Color</option>
                         <option value="lynx">Atari Lynx</option>
                         <option value="ngp">Neo Geo Pocket / Color</option>
-                        <!-- Arcades e Computadores -->
                         <option value="arcade">Arcade (MAME / FBA)</option>
                         <option value="neogeo">Neo Geo MVS/AES</option>
                         <option value="dos">MS-DOS</option>
@@ -94,7 +84,7 @@
                 
                 <div class="input-group">
                     <label for="rom-upload" class="custom-file-upload">
-                        📁 Escolher ROM
+                        📁 Escolher Arquivo ROM
                     </label>
                     <input type="file" id="rom-upload" accept=".nes,.sfc,.smc,.gba,.gbc,.gb,.bin,.md,.smd,.sms,.gen,.n64,.iso,.img,.z64,.pbp,.cso,.prg,.d64,.adf">
                     <span id="file-name-display">Nenhum arquivo selecionado</span>
@@ -104,10 +94,9 @@
             </div>
         </section>
 
-        <!-- Galeria de ROMs Próprias/Independentes -->
         <main class="catalog-container">
             <div class="section-title">
-                <h2>🛸 Jogos Populares</h2>
+                 <h2>🛸 Jogos Populares</h2>
                 <p>Jogue agora os melhores clássicos dos consoles!</p>
             </div>
 
