@@ -44,7 +44,7 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
-// Manipuladores de Eventos do Painel de Autenticação
+// Manipuladores de Eventos do Panel de Autenticação
 btnLogin.addEventListener('click', async () => {
     try { await signInWithPopup(auth, provider); } 
     catch (error) { console.error("Erro no fluxo de autenticação: ", error); }
@@ -54,7 +54,6 @@ btnLogout.addEventListener('click', () => signOut(auth));
 
 /**
  * Motor de Inicialização Genérico do Emulador
- * Puxa os dados binários da ROM para o contexto da RAM do navegador e roda de forma isolada.
  */
 window.launchGame = function(system, romUrl, gameTitle) {
     // Esconde a Dashboard e exibe a tela do emulador
@@ -66,24 +65,27 @@ window.launchGame = function(system, romUrl, gameTitle) {
     // Sanitização e limpeza de instâncias prévias do canvas do player
     document.getElementById('emulator-player').innerHTML = `<div id="game-canvas"></div>`;
 
-    // Injeção de Parâmetros Globais requeridos na API do EmulatorJS
+    // 1. Injeção das Configurações Globais (PRECISAM VIR ANTES DO SCRIPT DO EMULADOR)
     window.EJS_player = '#game-canvas';
     window.EJS_core = system; 
     window.EJS_gameUrl = romUrl; 
     window.EJS_pathtodata = 'https://cdn.emulatorjs.org/latest/data/'; 
     
-    // Configurações nativas para evitar tela preta no mobile e forçar o início imediato
     window.EJS_startOnLoaded = true; 
     window.EJS_AdUrl = ''; 
 
-    // Injeção assíncrona do script Loader oficial do ecossistema EmulatorJS
-    const script = document.createElement('script');
-    script.src = 'https://cdn.emulatorjs.org/latest/data/loader.js';
-    document.getElementById('emulator-player').appendChild(script);
+    // Força o emulador a entender que o sistema de login/nuvem está ativo no site externo
+    window.EJS_myserver = 'true';
 
-    // Callback síncrono disparado no carregamento da rom para restaurar save states antigos do Firebase
+    // 2. DECLARAÇÃO DOS INTERCEPTADORES (Definidos ANTES do loader para o emulador escutá-los)
+    
+    // Disparado assim que a ROM carrega para buscar o save na nuvem
     window.EJS_onLogin = async function() {
-        if (!currentUser) return;
+        console.log("EmulatorJS carregado. Verificando persistência de nuvem...");
+        if (!currentUser) {
+            console.log("Nenhum usuário logado. Ignorando busca de save states.");
+            return;
+        }
         const sanitizedTitle = gameTitle.replace(/[^a-zA-Z0-9]/g, "_");
         const saveRef = doc(db, "saves", `${currentUser.uid}_${sanitizedTitle}`);
         
@@ -91,15 +93,18 @@ window.launchGame = function(system, romUrl, gameTitle) {
             const saveSnap = await getDoc(saveRef);
             if (saveSnap.exists()) {
                 window.EJS_LoadState(new Uint8Array(saveSnap.data().bytes));
-                console.log("Save state restaurado com sucesso via Cloud!");
+                console.log("Save state recuperado do Firestore e injetado na RAM!");
+            } else {
+                console.log("Nenhum save state prévio encontrado para este jogo.");
             }
         } catch (err) {
             console.error("Falha ao ler save do Firebase:", err);
         }
     };
 
-    // Interceptador disparado pela engine do emulador no evento de escrita de Save State do Usuário
+    // Interceptador disparado TODA VEZ que você clica em salvar dentro do menu do emulador
     window.EJS_onSaveState = async function(data) {
+        console.log("Evento onSaveState detectado pelo JavaScript!");
         if (!currentUser) {
             alert("Faça login com a sua conta Google para salvar o progresso do jogo na nuvem!");
             return;
@@ -109,20 +114,27 @@ window.launchGame = function(system, romUrl, gameTitle) {
         const saveRef = doc(db, "saves", `${currentUser.uid}_${sanitizedTitle}`);
         
         try {
+            // Salva ou sobrescreve o documento de forma assíncrona
             await setDoc(saveRef, {
                 bytes: Array.from(data),
                 updatedAt: new Date()
             });
-            console.log("Estado de persistência gravado com sucesso no Firebase!");
+            console.log("Estado gravado com sucesso no Cloud Firestore!");
+            alert("Progresso salvo com sucesso na nuvem! 🔥");
         } catch (err) {
             console.error("Erro na gravação do save state na nuvem:", err);
+            alert("Erro ao salvar na nuvem: " + err.message);
         }
     };
+
+    // 3. INJEÇÃO DO SCRIPT LOADER (Agora que tudo está configurado, o script inicia com segurança)
+    const script = document.createElement('script');
+    script.src = 'https://cdn.emulatorjs.org/latest/data/loader.js';
+    document.getElementById('emulator-player').appendChild(script);
 };
 
 /**
  * Função de Processamento para Upload de Arquivos de ROM Locais
- * Intercepta o arquivo local através da API FileReader e aloca na memória interna através de uma Blob URL
  */
 window.uploadAndPlay = function() {
     const fileInput = document.getElementById('rom-upload');
@@ -136,51 +148,40 @@ window.uploadAndPlay = function() {
     const file = fileInput.files[0];
     const extension = file.name.split('.').pop().toLowerCase();
 
-    // Sistema inteligente de Auto-Correção e Suporte para Extensões Alternativas (.smd, .sms, .gen)
     if (extension === 'smd' || extension === 'gen' || extension === 'md') {
         system = 'segaMD'; 
     } else if (extension === 'sms') {
         system = 'mastersystem'; 
     }
 
-    // Se já havia uma ROM alocada anteriormente, limpa antes de gerar outra
     if (activeBlobUrl) {
         URL.revokeObjectURL(activeBlobUrl);
     }
 
-    // Cria uma URL virtual estática temporária apontando de volta para a RAM local do dispositivo do cliente
     activeBlobUrl = URL.createObjectURL(file);
-
-    // Aciona a rotina padrão do emulador passando a referência virtual da RAM
     launchGame(system, activeBlobUrl, file.name);
 };
 
 /**
- * Finaliza a execução do Core, limpa a memória RAM e retorna o usuário à tela de seleção principal
+ * Finaliza a execução do Core e limpa a memória
  */
 window.closeEmulator = function() {
-    // 1. Destrói o Canvas e o iFrame do emulador descarregando o WebAssembly
     document.getElementById('emulator-player').innerHTML = '';
     
-    // 2. Coleta de lixo da memória RAM: Revoga o link da ROM para liberar espaço no sistema operacional
     if (activeBlobUrl) {
         URL.revokeObjectURL(activeBlobUrl);
         activeBlobUrl = null;
     }
 
-    // 3. Limpa todas as instâncias e variáveis globais criadas pelo Loader da biblioteca anterior
     window.EJS_player = null;
     window.EJS_core = null;
     window.EJS_gameUrl = null;
     if (window.EJS_emulator) {
-        try {
-            window.EJS_emulator.destroy(); 
-        } catch(e) {}
+        try { window.EJS_emulator.destroy(); } catch(e) {}
         window.EJS_emulator = null;
     }
 
-    // 4. Alterna as telas de exibição visual da UI
     document.getElementById('emulator-screen').classList.add('hidden');
     document.getElementById('catalog-screen').classList.remove('hidden');
-    console.log("Instância do jogo destruída e alocação de memória RAM liberada com sucesso.");
+    console.log("Instância do jogo destruída e alocação de memória RAM liberada.");
 };
