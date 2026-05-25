@@ -354,8 +354,7 @@ input[type="file"] {
         flex: 0 0 50px;
     }
 
-    /* O contêiner pai se expande para ocupar o restante da tela inteira,
-       permitindo que a lib desenhe o canvas e aplique a margem inferior dos botões sozinha */
+    /* O contêiner pai se expande para ocupar o restante da tela inteira */
     .emulator-frame-wrapper {
         border: none !important;
         border-radius: 0 !important;
