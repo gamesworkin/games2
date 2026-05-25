@@ -4,8 +4,8 @@ import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
 
 // ⚠️ SUBSTITUA TODAS AS PROPRIEDADES ABAIXO PELAS CREDENCIAIS DO SEU CONSOLE FIREBASE
 const firebaseConfig = {
-    apiKey: "SUA_API_KEY",
-    authDomain: "SEU_AUTH_DOMAIN",
+    apiKey: "AIzaSyATr3AFcjJtamWRKZEBBcsA8vi-_ckCeEs",
+    authDomain: "games2-c9b04.firebaseapp.com",
     projectId: "games2-c9b04",
     storageBucket: "games2-c9b04.firebasestorage.app",
     messagingSenderId: "417046305603",
