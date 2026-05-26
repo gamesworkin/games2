@@ -52,8 +52,8 @@ body {
     gap: 15px;
 }
 
-/* Botões Genéricos */
-.btn-home, .btn-auth, .btn-close, .btn-play-now {
+/* Botões Customizados Roxo com Fonte Branca para os Blogs Home */
+.btn-home {
     padding: 10px 20px;
     border-radius: 6px;
     font-weight: 600;
@@ -61,17 +61,53 @@ body {
     text-decoration: none;
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     font-size: 0.9rem;
+    background-color: var(--neon-purple);
+    color: var(--text-white);
+    border: 1px solid var(--neon-purple);
 }
 
-.btn-home {
-    background: transparent;
-    color: var(--neon-cyan);
-    border: 1px solid var(--neon-cyan);
-}
 .btn-home:hover {
-    background: var(--neon-cyan);
-    color: var(--bg-main);
-    box-shadow: 0 0 15px var(--neon-cyan);
+    background-color: #7b2cbf;
+    border-color: #7b2cbf;
+    box-shadow: 0 0 15px var(--neon-purple);
+    transform: translateY(-2px);
+}
+
+/* Botão Oficial Identidade do Google */
+.btn-google {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: #ffffff;
+    color: #1f2833;
+    border: 1px solid #ffffff;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.btn-google:hover {
+    background-color: #f1f1f1;
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+}
+
+.google-icon {
+    display: block;
+}
+
+.btn-close, .btn-play-now {
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    font-size: 0.9rem;
 }
 
 .btn-auth {
