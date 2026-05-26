@@ -47,7 +47,7 @@
     <main class="emulator-container hidden" id="emulator-screen">
         <div class="emulator-header">
             <h2 id="playing-title">Jogando...</h2>
-            <button onclick="closeEmulator()" class="btn-close">✖ Fechar Jogo</button>
+            <button onclick="document.getElementById('player-wrapper-target').innerHTML = ''; closeEmulator();" class="btn-close">✖ Fechar Jogo</button>
         </div>
         <div class="emulator-frame-wrapper" id="player-wrapper-target">
             <div id="emulator-player"></div>
@@ -110,11 +110,12 @@
 
         <main class="catalog-container">
             <div class="section-title">
-                <h2>🛸 Jogos populares</h2>
-                <p>Jogue os melhores clássicos do mundo aqui!</p>
+                <h2>🛸 ROMs Independentes Inclusas</h2>
+                <p>Disponibilizadas diretamente do servidor para a sua RAM sem esforço</p>
             </div>
 
-            <div class="game-card" onclick="launchGame('gba', 'https://raw.githubusercontent.com/gamesworkin/games/main/roms/DBAA.gba', 'Dragon Ball Advanced Adventure')">
+            <div class="grid-games">
+                <div class="game-card" onclick="launchGame('gba', 'https://raw.githubusercontent.com/seu-usuario/seu-repositorio/main/roms/indie_game.gba', 'Vortex Advance')">
                     <div class="badge-system">GBA</div>
                     <div class="cover-wrapper">
                         <img src="https://sm.ign.com/ign_br/screenshot/default/dragon-ball-advance-adventure_pjja.png" alt="Dragon Ball Advanced Adventure">
@@ -170,16 +171,21 @@
                         <p>Nintendo</p>
                     </div>
                 </div>
+
+                <div class="game-card" onclick="launchGame('segaMD', 'https://raw.githubusercontent.com/seu-usuario/seu-repositorio/main/roms/cyber_space.md', 'Cyber Space 95')">
+                    <div class="badge-system">MEGA DRIVE</div>
+                    <div class="cover-wrapper">
+                        <img src="https://images.unsplash.com/photo-1578632767115-351597cf2477?w=400" alt="Capa Cyber Space 95">
+                    </div>
+                    <div class="game-info">
+                        <h3>Cyber Space 95</h3>
+                        <p>Neon Team</p>
+                    </div>
+                </div>
             </div>
         </main>
     </div>
 
     <script type="module" src="app.js"></script>
-    <script>
-        document.getElementById('rom-upload').addEventListener('change', function(e) {
-            const fileName = e.target.files[0] ? e.target.files[0].name : "Nenhum arquivo selecionado";
-            document.getElementById('file-name-display').textContent = fileName;
-        });
-    </script>
 </body>
 </html>
