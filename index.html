@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Games Workin' Emulação Online</title>
+    
+    <link rel="shortcut icon" href="fav.ico" type="image/x-icon">
+    <link rel="icon" href="fav.ico" type="image/x-icon">
+
     <link rel="stylesheet" href="style.css">
     <script type="importmap">
         {
@@ -21,7 +25,17 @@
         <nav class="nav-links">
             <a href="https://gamesworkin.blogspot.com" target="_blank" class="btn-home">Games Workin'</a>
             <a href="https://bombapatchworkin.blogspot.com" target="_blank" class="btn-home">Bomba Patch Workin'</a>
-            <button id="btn-login" class="btn-auth">Entrar com Google</button>
+            
+            <button id="btn-login" class="btn-google">
+                <svg aria-hidden="true" class="google-icon" width="18" height="18" viewBox="0 0 18 18">
+                    <path fill="#4285F4" d="M17.64 9.2c0-.63-.06-1.25-.16-1.84H9v3.47h4.84c-.21 1.12-.84 2.07-1.8 2.72v2.26h2.92c1.71-1.57 2.68-3.88 2.68-6.61z"/>
+                    <path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.19l-2.92-2.26c-.8.54-1.83.85-3.04.85-2.34 0-4.32-1.58-5.03-3.71H.95v2.33C2.44 15.99 5.47 18 9 18z"/>
+                    <path fill="#FBBC05" d="M3.97 10.69c-.18-.54-.28-1.12-.28-1.69s.1-1.15.28-1.69V4.98H.95A8.99 9.001 0 0 0 0 9c0 1.45.35 2.82.95 4.02l2.33-1.81l.69-.52z"/>
+                    <path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35L15 2.4C13.46.97 11.41 0 9 0C5.47 0 2.44 2.01.95 4.98l3.02 2.33c.71-2.13 2.69-3.73 5.03-3.73z"/>
+                </svg>
+                <span>Entrar com Google</span>
+            </button>
+
             <div id="user-info" class="user-profile hidden">
                 <img id="user-avatar" src="" alt="Avatar">
                 <span id="user-name"></span>
@@ -35,7 +49,7 @@
             <h2 id="playing-title">Jogando...</h2>
             <button onclick="closeEmulator()" class="btn-close">✖ Fechar Jogo</button>
         </div>
-        <div class="emulator-frame-wrapper">
+        <div class="emulator-frame-wrapper" id="player-wrapper-target">
             <div id="emulator-player"></div>
         </div>
     </main>
@@ -96,13 +110,11 @@
 
         <main class="catalog-container">
             <div class="section-title">
-                 <h2>🛸 Jogos Populares</h2>
-                <p>Jogue agora os melhores clássicos dos consoles!</p>
+                <h2>🛸 Jogos populares</h2>
+                <p>Jogue os melhores clássicos do mundo aqui!</p>
             </div>
 
-            <div class="grid-games">
-                <!-- Card Jogo 1 (GBA) -->
-                <div class="game-card" onclick="launchGame('gba', 'https://raw.githubusercontent.com/gamesworkin/games/main/roms/DBAA.gba', 'Dragon Ball Advanced Adventure')">
+            <div class="game-card" onclick="launchGame('gba', 'https://raw.githubusercontent.com/gamesworkin/games/main/roms/DBAA.gba', 'Dragon Ball Advanced Adventure')">
                     <div class="badge-system">GBA</div>
                     <div class="cover-wrapper">
                         <img src="https://sm.ign.com/ign_br/screenshot/default/dragon-ball-advance-adventure_pjja.png" alt="Dragon Ball Advanced Adventure">
@@ -158,7 +170,6 @@
                         <p>Nintendo</p>
                     </div>
                 </div>
-                
             </div>
         </main>
     </div>
