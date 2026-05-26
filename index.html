@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <link rel="icon" type="image/x-icon" href="fav.ico">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Games Workin' Emulação online</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00f2ff;
+            --secondary: #7000ff;
+            --accent: #ff0055;
+            --bg: #030305;
+            --card-bg: #0d0d12;
+        }
+
+        body {
+            margin: 0; padding: 0;
+            font-family: 'Rajdhani', sans-serif;
+            background-color: var(--bg);
+            color: #e0e0e0;
+            display: flex; flex-direction: column; align-items: center;
+            min-height: 100vh; overflow-x: hidden;
+        }
+
+        /* Efeito de Scanlines CRT */
+        body::before {
+            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            background-size: 100% 3px, 3px 100%;
+            pointer-events: none; z-index: 10;
+        }
+
+        header { text-align: center; padding: 40px 20px; z-index: 5; }
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(1.8rem, 5vw, 3rem);
+            letter-spacing: 6px;
+            background: linear-gradient(to right, var(--primary), var(--secondary), var(--accent));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 8px rgba(0, 242, 255, 0.4));
+            margin: 0;
+        }
+
+        .container { width: 95%; max-width: 1200px; z-index: 5; padding-bottom: 80px; }
+
+        #emu-wrapper {
+            width: 100%; height: 0; overflow: hidden;
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            background: #000; border-radius: 20px; position: relative;
+        }
+
+        #emu-wrapper.active {
+            height: 700px; margin-bottom: 40px;
+            border: 2px solid var(--primary);
+            box-shadow: 0 0 40px rgba(0, 242, 255, 0.2);
+        }
+
+        #close-emu {
+            position: absolute; top: 15px; right: 15px; z-index: 1000;
+            background: var(--accent); color: white; border: none;
+            padding: 8px 16px; border-radius: 5px; font-family: 'Orbitron';
+            cursor: pointer; display: none; font-weight: bold;
+        }
+
+        .section-title {
+            font-family: 'Orbitron'; border-left: 4px solid var(--primary);
+            padding-left: 15px; margin: 30px 0 20px; text-transform: uppercase;
+        }
+
+        .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
+
+        .game-card {
+            background: var(--card-bg); border: 1px solid #222; border-radius: 12px;
+            padding: 15px; text-align: center; cursor: pointer; transition: 0.3s;
+        }
+
+        .game-card:hover { border-color: var(--primary); transform: translateY(-5px); background: #12121a; }
+        .game-card i { font-size: 2rem; color: var(--secondary); margin-bottom: 10px; }
+        .game-card h3 { margin: 8px 0; font-size: 1rem; }
+        .game-card .sys-tag { font-size: 0.65rem; color: var(--primary); border: 1px solid var(--primary); padding: 1px 6px; border-radius: 4px; }
+
+        .upload-panel {
+            background: linear-gradient(145deg, #0d0d12, #14141c);
+            border-radius: 20px; padding: 30px; margin-top: 30px; border: 1px solid #333; text-align: center;
+        }
+
+        .controls-row { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 20px; }
+
+        select, .btn-main {
+            padding: 12px 20px; border-radius: 10px; font-family: 'Rajdhani';
+            font-weight: bold; font-size: 1rem; border: none; cursor: pointer; transition: 0.2s;
+        }
+
+        select { background: #222; color: white; border: 1px solid #444; min-width: 250px; outline: none; }
+        select:focus { border-color: var(--primary); }
+        .btn-main { background: linear-gradient(45deg, var(--secondary), var(--accent)); color: white; text-transform: uppercase; }
+        .btn-main:hover { box-shadow: 0 0 20px var(--secondary); transform: scale(1.02); }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+
+<header>
+    <h1>Games Workin' Emulação online</h1>
+    <p style="color: var(--primary); letter-spacing: 2px; font-size: 0.9rem;">ULTRA MULTI-SYSTEM CLOUD HUB</p>
+    <a href="https://gamesworkin.blogspot.com" class="botao">Games Workin'</a>
+
+<style>
+.botao 
+
+{
+    text-decoration: none;
+    background-color: #007bff;
+    color: white;
+    
+
+padding: 10px 20px;
+    border-radius: 5px;
+    display: inline-block;
+}
+.botao:hover {
+    background-color: #0056b3;
+}
+</style>
+
+    <a href="https://bombapatchworkin.blogspot.com" class="botao">Bomba Patch Workin'</a>
+
+<style>
+.botao 
+
+{
+    text-decoration: none;
+    background-color: #007bff;
+    color: white;
+    
+
+padding: 10px 20px;
+    border-radius: 5px;
+    display: inline-block;
+}
+.botao:hover {
+    background-color: #0056b3;
+}
+</style>
+    
+</header>
+
+<div class="container">
+    <div id="emu-wrapper">
+        <button id="close-emu" onclick="exitGame()">EXIT [X]</button>
+        <div id="game-engine" style="width: 100%; height: 100%;"></div>
+    </div>
+
+    <h2 class="section-title">Mais jogados</h2>
+    <div class="game-grid">
+        <div class="game-card" onclick="fetchAndPlay('https://github.com/gamesworkin/games/blob/main/roms/SON.smd', 'segaMD')">
+            <i class="fas fa-compact-disc"></i>
+            <h3>Sonic the Hedgehog</h3>
+            <span class="sys-tag">MD</span>
+        </div>
+        <div class="game-card" onclick="fetchAndPlay('https://github.com/gamesworkin/games/blob/main/roms/MJM.smd', 'segaMD')">
+            <i class="fas fa-compact-disc"></i>
+            <h3>Michael Jackson's Moonwalker</h3>
+            <span class="sys-tag">MD</span>
+        </div>
+        <div class="game-card" onclick="fetchAndPlay('https://github.com/gamesworkin/games/blob/main/roms/ALA.smd', 'segaMD')">
+            <i class="fas fa-compact-disc"></i>
+            <h3>Aladdin</h3>
+            <span class="sys-tag">MD</span>
+        </div>
+        <div class="game-card" onclick="fetchAndPlay('https://github.com/gamesworkin/games/blob/main/roms/SMB.nes', 'nes')">
+            <i class="fas fa-compact-disc"></i>
+            <h3>Super Mario Bros.</h3>
+            <span class="sys-tag">NES</span>
+        </div>
+        <div class="game-card" onclick="fetchAndPlay('https://github.com/gamesworkin/games/blob/main/roms/SMW.sfc', 'snes')">
+            <i class="fas fa-compact-disc"></i>
+            <h3>Super Mario World</h3>
+            <span class="sys-tag">SNES</span>
+        </div>
+        <div class="game-card" onclick="fetchAndPlay('https://github.com/gamesworkin/games/blob/main/roms/SMAS.sfc', 'snes')">
+            <i class="fas fa-compact-disc"></i>
+            <h3>Super Mario All Stars</h3>
+            <span class="sys-tag">SNES</span>
+        </div>
+        <div class="game-card" onclick="fetchAndPlay('https://github.com/gamesworkin/games/blob/main/roms/BOB.sfc', 'snes')">
+            <i class="fas fa-compact-disc"></i>
+            <h3>B.O.B.</h3>
+            <span class="sys-tag">SNES</span>
+        </div>
+        <div class="game-card" onclick="fetchAndPlay('https://github.com/gamesworkin/games/blob/main/roms/BOMB.sfc', 'snes')">
+            <i class="fas fa-compact-disc"></i>
+            <h3>Super Bomberman</h3>
+            <span class="sys-tag">SNES</span>
+        </div>
+        <div class="game-card" onclick="fetchAndPlay('https://github.com/gamesworkin/games/blob/main/roms/DONK1.sfc', 'snes')">
+            <i class="fas fa-compact-disc"></i>
+            <h3>Donkey Kong Country</h3>
+            <span class="sys-tag">SNES</span>
+        </div>
+        <div class="game-card" onclick="fetchAndPlay('https://github.com/gamesworkin/games/blob/main/roms/MMPR.sfc', 'snes')">
+            <i class="fas fa-compact-disc"></i>
+            <h3>Mighty Morphin Power Rangers</h3>
+            <span class="sys-tag">SNES</span>
+        </div>
+        <div class="game-card" onclick="fetchAndPlay('https://github.com/gamesworkin/games/blob/main/roms/MMPRM.sfc', 'snes')">
+            <i class="fas fa-compact-disc"></i>
+            <h3>Mighty Morphin Power Rangers - The Movie</h3>
+            <span class="sys-tag">SNES</span>
+        </div>
+        <div class="game-card" onclick="fetchAndPlay('https://github.com/gamesworkin/games/blob/main/roms/SSFII.sfc', 'snes')">
+            <i class="fas fa-compact-disc"></i>
+            <h3>Super Street Fighter II</h3>
+            <span class="sys-tag">SNES</span>
+        </div>
+        <div class="game-card" onclick="fetchAndPlay('https://github.com/gamesworkin/games/blob/main/roms/DBAA.gba', 'gba')">
+            <i class="fas fa-compact-disc"></i>
+            <h3>Dragon Ball - Advanced Adventure</h3>
+            <span class="sys-tag">GBA</span>
+        </div>
+        <div class="game-card" onclick="fetchAndPlay('https://github.com/gamesworkin/games/blob/main/roms/MLSS.gba', 'gba')">
+            <i class="fas fa-compact-disc"></i>
+            <h3>Mario & Luigi - Superstar Saga</h3>
+            <span class="sys-tag">GBA</span>
+        </div>
+        
+    </div>
+    <div class="game-grid">
+    
+    </div>
+        
+    <div class="upload-panel">
+        <h2 style="margin:0; font-family: 'Orbitron'; font-size: 1.2rem;">UPLOAD DE ROM LOCAL</h2>
+        <div class="controls-row">
+            <select id="system-core">
+                <optgroup label="Nintendo">
+                    <option value="nes">NES (Nintendo)</option>
+                    <option value="snes">Super Nintendo</option>
+                    <option value="n64">Nintendo 64</option>
+                    <option value="gb">GameBoy</option>
+                    <option value="gbc">GameBoy Color</option>
+                    <option value="gba">GameBoy Advance</option>
+                    <option value="nds">Nintendo DS</option>
+                    <option value="pokemonmini">Pokemon Mini</option>
+                    <option value="vb">Virtual Boy</option>
+                </optgroup>
+                <optgroup label="Sega">
+                    <option value="segaMS">Master System</option>
+                    <option value="segaGG">Game Gear</option>
+                    <option value="segaMD">Mega Drive / Genesis</option>
+                    <option value="sega32x">Sega 32X</option>
+                    <option value="segaCD">Sega CD</option>
+                    <option value="saturn">Sega Saturn</option>
+                </optgroup>
+                <optgroup label="Sony">
+                    <option value="ps1">PlayStation 1</option>
+                    <option value="psp">PlayStation Portable (PSP)</option>
+                </optgroup>
+                <optgroup label="Atari">
+                    <option value="atari2600">Atari 2600</option>
+                    <option value="atari5200">Atari 5200</option>
+                    <option value="atari7800">Atari 7800</option>
+                    <option value="atariLynx">Atari Lynx</option>
+                    <option value="atariJaguar">Atari Jaguar</option>
+                </optgroup>
+                <optgroup label="Outros Clássicos">
+                    <option value="arcade">Arcade (MAME)</option>
+                    <option value="neogeo">Neo Geo</option>
+                    <option value="pcengine">PC Engine (TurboGrafx-16)</option>
+                    <option value="pcenginecd">PC Engine CD</option>
+                    <option value="amiga">Commodore Amiga</option>
+                    <option value="dos">MS-DOS</option>
+                    <option value="wsw">WonderSwan</option>
+                    <option value="ngp">Neo Geo Pocket</option>
+                    <option value="3do">Panasonic 3DO</option>
+                    <option value="coleco">ColecoVision</option>
+                </optgroup>
+            </select>
+            <input type="file" id="local-file" style="display: none;" onchange="handleLocalFile(this)">
+            <button class="btn-main" onclick="document.getElementById('local-file').click()">
+                <i class="fas fa-upload"></i> INICIAR ROM
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const wrapper = document.getElementById('emu-wrapper');
+    const closeBtn = document.getElementById('close-emu');
+    let isLoaderLoaded = false;
+
+    function launchEngine(romData, core) {
+        // Reset do container para evitar bugs de sobreposição
+        document.getElementById('game-engine').innerHTML = '';
+        
+        wrapper.classList.add('active');
+        closeBtn.style.display = 'block';
+        window.scrollTo({top: 0, behavior: 'smooth'});
+
+        window.EJS_player = '#game-engine';
+        window.EJS_core = core;
+        window.EJS_gameUrl = romData; 
+        window.EJS_pathtodata = 'https://raw.githack.com/EmulatorJS/EmulatorJS/main/data/';
+        window.EJS_startOnLoaded = true;
+        window.EJS_language = 'pt-BR';
+
+        if (!isLoaderLoaded) {
+            const script = document.createElement('script');
+            script.src = 'https://raw.githack.com/EmulatorJS/EmulatorJS/main/data/loader.js';
+            document.head.appendChild(script);
+            isLoaderLoaded = true;
+        } else {
+            // Se já carregado, o EmulatorJS geralmente reinicia ao detectar mudanças nas variáveis globais
+            // ou através de um refresh/reinit manual se disponível na versão do loader.
+            if (window.EJS_reinit) window.EJS_reinit();
+        }
+    }
+
+    async function fetchAndPlay(url, core) {
+        // CORREÇÃO: Converte links de visualização do GitHub para links diretos (RAW)
+        let rawUrl = url.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
+        
+        const card = event.currentTarget;
+        const originalContent = card.innerHTML;
+        
+        try {
+            card.innerHTML = "<i class='fas fa-sync fa-spin'></i><br><span style='font-size:0.8rem'>LOADING RAM...</span>";
+            
+            const response = await fetch(rawUrl);
+            if (!response.ok) throw new Error("Falha no download");
+            
+            const data = await response.blob();
+            const ramUrl = URL.createObjectURL(data);
+            
+            launchEngine(ramUrl, core);
+            card.innerHTML = originalContent;
+        } catch (err) {
+            console.error(err);
+            alert("Erro de Rede: Verifique se o repositório é público e se o link da ROM está correto.");
+            card.innerHTML = originalContent;
+        }
+    }
+
+    function handleLocalFile(input) {
+        if (input.files && input.files[0]) {
+            const core = document.getElementById('system-core').value;
+            // CORREÇÃO: Usar createObjectURL em vez de readAsDataURL para melhor performance e compatibilidade
+            const romUrl = URL.createObjectURL(input.files[0]);
+            launchEngine(romUrl, core);
+        }
+    }
+
+    function exitGame() {
+        if(confirm("Deseja fechar? Todo o cache temporário será limpo.")) {
+            location.reload();
+        }
+    }
+</script>
+
+</body>
+</html>
