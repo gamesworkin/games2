@@ -235,7 +235,7 @@ input[type="file"] {
     transform: scale(1.02);
 }
 
-/* Mosaico de Catálogos Estável Ajustado */
+/* Catálogo de Cards */
 .catalog-container {
     max-width: 1200px;
     margin: 50px auto 0 auto;
@@ -246,7 +246,7 @@ input[type="file"] {
 .section-title h2 { font-size: 1.8rem; font-weight: 800; }
 .section-title p { color: var(--text-gray); font-size: 0.9rem; margin-top: 6px; }
 
-/* Configuração do Mosaico Grid */
+/* Configuração do Mosaico Grid Perfeito */
 .grid-games {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
