@@ -16,7 +16,6 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
-// Solicitação de Escopo para o Google Drive do usuário
 provider.addScope('https://www.googleapis.com/auth/drive.appdata');
 
 let currentUser = null;
@@ -38,9 +37,15 @@ onAuthStateChanged(auth, (user) => {
         userInfo.classList.remove('hidden');
         userAvatar.src = user.photoURL;
         userName.textContent = user.displayName.split(' ')[0];
+        
+        // Se houver um token guardado na sessão após a purga do refresh, restaura automaticamente
+        if (sessionStorage.getItem('g_token')) {
+            googleAccessToken = sessionStorage.getItem('g_token');
+        }
     } else {
         currentUser = null;
         googleAccessToken = null;
+        sessionStorage.removeItem('g_token');
         btnLogin.classList.remove('hidden');
         userInfo.classList.add('hidden');
     }
@@ -52,13 +57,32 @@ btnLogin.addEventListener('click', async () => {
         const result = await signInWithPopup(auth, provider);
         const credential = GoogleAuthProvider.credentialFromResult(result);
         googleAccessToken = credential.accessToken;
+        
+        // Memoriza o token na sessão para não deslogar o Drive no fechamento por Refresh
+        sessionStorage.setItem('g_token', googleAccessToken);
         console.log("Token do Google Drive obtido com sucesso!");
     } catch (error) {
         console.error("Erro no fluxo de login: ", error);
     }
 });
 
-btnLogout.addEventListener('click', () => signOut(auth));
+btnLogout.addEventListener('click', () => {
+    sessionStorage.removeItem('g_token');
+    signOut(auth);
+});
+
+/**
+ * Executado ao carregar a página: Verifica se o site veio de um comando de fechamento de emulador
+ */
+window.addEventListener('DOMContentLoaded', () => {
+    if (sessionStorage.getItem('emu_purge_active') === 'true') {
+        sessionStorage.removeItem('emu_purge_active');
+        // Garante o posicionamento visual correto na Dashboard limpa
+        document.getElementById('emulator-screen').classList.add('hidden');
+        document.getElementById('catalog-screen').classList.remove('hidden');
+        console.log("Instância anterior eliminada com sucesso. Memória física do navegador restaurada.");
+    }
+});
 
 /**
  * Motor de Inicialização Síncrono do Emulador
@@ -69,11 +93,9 @@ window.launchGame = function(system, romUrl, gameTitle) {
     emuScreen.classList.remove('hidden');
     document.getElementById('playing-title').textContent = `Jogando: ${gameTitle}`;
 
-    // Garante a criação limpa do nó alvo receptor do player
     const wrapper = document.getElementById('player-wrapper-target');
     wrapper.innerHTML = `<div id="emulator-player"><div id="game-canvas"></div></div>`;
 
-    // Parâmetros estruturais obrigatórios do EmulatorJS
     window.EJS_player = '#game-canvas';
     window.EJS_core = system; 
     window.EJS_gameUrl = romUrl; 
@@ -90,7 +112,6 @@ window.launchGame = function(system, romUrl, gameTitle) {
 
     // CARREGAMENTO AUTOMÁTICO
     window.EJS_onLogin = async function() {
-        console.log("Iniciando varredura automatizada na conta Google Drive do jogador...");
         if (!googleAccessToken) return;
 
         try {
@@ -183,38 +204,15 @@ window.uploadAndPlay = function() {
 };
 
 /**
- * ⚡ FECHAMENTO COMPLEMENTAR:
- * Chamado logo após o HTML purgar o nó interno. Reseta as variáveis globais de escuta.
+ * 🔥 OPERAÇÃO PURGA MÁXIMA:
+ * Corta as conexões de gamepads do sistema operacional e limpa os scripts fantasmas forçando um reload limpo da página.
  */
 window.closeEmulator = function() {
-    console.log("Purgando referências e liberando slots de memória RAM...");
-
-    // Tenta fechar o contexto de som se ele ainda estiver mapeável na janela
-    if (window.EJS_emulator && window.EJS_emulator.gameManager) {
-        try {
-            const module = window.EJS_emulator.gameManager.getModule();
-            if (module && module.audioContext) {
-                module.audioContext.close();
-            }
-        } catch (e) {}
-    }
-
-    // Corta alocação de ROMs locais
-    if (activeBlobUrl) {
-        URL.revokeObjectURL(activeBlobUrl);
-        activeBlobUrl = null;
-    }
-
-    // Desfaz escutas e referências globais do ecossistema anterior para o próximo jogo carregar limpo
-    window.EJS_player = null;
-    window.EJS_core = null;
-    window.EJS_gameUrl = null;
-    window.EJS_onLogin = null;
-    window.EJS_onSaveState = null;
-    window.EJS_emulator = null;
-
-    // Alterna a interface de telas de volta à Dashboard principal
-    document.getElementById('emulator-screen').classList.add('hidden');
-    document.getElementById('catalog-screen').classList.remove('hidden');
-    console.log("Sistema limpo com sucesso!");
+    console.log("Cortando conexões paralelas do WebAssembly...");
+    
+    // Seta a flag para o script saber que deve carregar direto na dashboard pós-refresh
+    sessionStorage.setItem('emu_purge_active', 'true');
+    
+    // Executa a purga total limpando a memória RAM e as threads ativas de áudio/controles do navegador
+    window.location.reload();
 };
