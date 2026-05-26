@@ -69,9 +69,9 @@ window.launchGame = function(system, romUrl, gameTitle) {
     emuScreen.classList.remove('hidden');
     document.getElementById('playing-title').textContent = `Jogando: ${gameTitle}`;
 
-    // Garante que o contêiner interno esteja pronto para receber a injeção limpa
-    document.getElementById('player-wrapper-target').innerHTML = `<div id="emulator-player"></div>`;
-    document.getElementById('emulator-player').innerHTML = `<div id="game-canvas"></div>`;
+    // Garante a criação limpa do nó alvo receptor do player
+    const wrapper = document.getElementById('player-wrapper-target');
+    wrapper.innerHTML = `<div id="emulator-player"><div id="game-canvas"></div></div>`;
 
     // Parâmetros estruturais obrigatórios do EmulatorJS
     window.EJS_player = '#game-canvas';
@@ -145,7 +145,7 @@ window.launchGame = function(system, romUrl, gameTitle) {
 
                 await fetch(createUrl, { method: 'POST', headers: { 'Authorization': `Bearer ${googleAccessToken}` }, body: formData });
             }
-            alert("Progresso saved com sucesso no seu Google Drive pessoal! 💾🔥");
+            alert("Progresso salvo com sucesso no seu Google Drive pessoal! 💾🔥");
         } catch (err) {
             console.error("Falha ao gravar save state no Google Drive:", err);
         }
@@ -183,46 +183,29 @@ window.uploadAndPlay = function() {
 };
 
 /**
- * 🔥 CORREÇÃO DEFINITIVA E AGRESSIVA: 
- * Mata threads de áudio ocultas, destrói iframes remanescentes e purga o emulador da RAM completamente.
+ * ⚡ FECHAMENTO COMPLEMENTAR:
+ * Chamado logo após o HTML purgar o nó interno. Reseta as variáveis globais de escuta.
  */
 window.closeEmulator = function() {
-    console.log("Iniciando purga total e encerramento em tempo de execução...");
+    console.log("Purgando referências e liberando slots de memória RAM...");
 
-    // 1. Desliga forçadamente o motor de áudio Web Audio API integrado no WebAssembly
+    // Tenta fechar o contexto de som se ele ainda estiver mapeável na janela
     if (window.EJS_emulator && window.EJS_emulator.gameManager) {
         try {
             const module = window.EJS_emulator.gameManager.getModule();
             if (module && module.audioContext) {
                 module.audioContext.close();
-                console.log("Thread paralela de som do WASM finalizada com sucesso.");
             }
         } catch (e) {}
     }
 
-    // 2. Chama a rotina nativa de eliminação de escuta se ela ainda estiver disponível
-    if (window.EJS_emulator && typeof window.EJS_emulator.destroy === "function") {
-        try { window.EJS_emulator.destroy(); } catch(e) {}
-    }
-
-    // 3. HARD RESET DO ELEMENTO PAI (Mata os Iframes e Canvas fantasmas cortando o processo do navegador)
-    const wrapper = document.getElementById('player-wrapper-target');
-    if (wrapper) {
-        wrapper.innerHTML = ""; // Limpa tudo
-        // Recria um nó de elemento virgem na árvore do DOM eliminando vestígios do iframe
-        const newPlayerNode = document.createElement('div');
-        newPlayerNode.id = 'emulator-player';
-        wrapper.appendChild(newPlayerNode);
-        console.log("Estrutura do DOM limpa e redefinida para estado neutro.");
-    }
-
-    // 4. Libera a alocação do arquivo ROM temporário que estava preso na memória do navegador
+    // Corta alocação de ROMs locais
     if (activeBlobUrl) {
         URL.revokeObjectURL(activeBlobUrl);
         activeBlobUrl = null;
     }
 
-    // 5. Purga absoluta de metadados da janela de escuta global para o próximo jogo abrir limpo
+    // Desfaz escutas e referências globais do ecossistema anterior para o próximo jogo carregar limpo
     window.EJS_player = null;
     window.EJS_core = null;
     window.EJS_gameUrl = null;
@@ -230,8 +213,8 @@ window.closeEmulator = function() {
     window.EJS_onSaveState = null;
     window.EJS_emulator = null;
 
-    // Remove os bloqueios de visualização e retorna para a Dashboard
+    // Alterna a interface de telas de volta à Dashboard principal
     document.getElementById('emulator-screen').classList.add('hidden');
     document.getElementById('catalog-screen').classList.remove('hidden');
-    console.log("Purga concluída. Memória RAM e som limpos com sucesso! ⚡");
+    console.log("Sistema limpo com sucesso!");
 };
